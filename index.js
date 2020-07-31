@@ -24,41 +24,38 @@ router.post('/login',function(req,res){
 //forgot password
 router.put('/forgotpassword',function(req,res){
   var username=req.body.username;
-  User.findOne({username:username},function(err,user){
+  User.findOne({username:username},function(err,founduser){
     if (err){
       console.log(err);
       return res.status(400).send();
     }
-    if(!user){
+    else{
+    if(!founduser){
     
       return res.status(401).send("User not found");
       
     }
     else{
-      if(res.body.password)
+      if(req.body.password)
       {
-        user.password=res.body.password;
+        founduser.password=req.body.password;
       }
-      user.save(function(err,updateobject){
+      founduser.save(function(err,updateobject){
         if(err){
           console.log(err);
           return res.status(500).send();
         }
         else{
-          return res.send(updateobject);
+           res.send(updateobject);
         }
-      })
+      });
     }
-      })
-
-
-
-    
-})
-
-
-
+  }
+      });   
 });
+
+
+
 //dashboard after logged in
 router.get('/dashboard',function(req,res){
   if(!req.session){
@@ -66,11 +63,6 @@ router.get('/dashboard',function(req,res){
   }
   return res.status(200).send("welcome !! successfully logged In");
 })
-
-
-
-
-
  //register 
 router.post('/register',function(req,res){
   var username=req.body.username;
@@ -109,4 +101,11 @@ router.post('/register',function(req,res){
   })
 
 module.exports = router;
+
+
+    
+
+
+ 
+    
 
