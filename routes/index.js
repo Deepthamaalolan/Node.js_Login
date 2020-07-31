@@ -19,7 +19,8 @@ router.post('/login',function(req,res){
     }
     req.session.user=user;
     return res.status(200).send();
-  })
+  });
+});
 
 //forgot password
 router.put('/forgotpassword',function(req,res){
@@ -30,28 +31,28 @@ router.put('/forgotpassword',function(req,res){
       return res.status(400).send();
     }
     else{
-    if(!founduser){
+      if(!founduser){
     
-      return res.status(401).send("User not found");
+        return res.status(401).send("User not found");
       
-    }
-    else{
-      if(req.body.password)
-      {
-        founduser.password=req.body.password;
       }
-      founduser.save(function(err,updateobject){
-        if(err){
-          console.log(err);
-          return res.status(500).send();
+      else{
+        if(req.body.password)
+        {
+          founduser.password=req.body.password;
         }
-        else{
-           res.send(updateobject);
-        }
-      });
+        founduser.save(function(err,updateobject){
+          if(err){
+            console.log(err);
+            return res.status(500).send();
+          }
+          else{
+            res.send(updateobject);
+          }
+        });
+      }
     }
-  }
-      });   
+    });   
 });
 
 
@@ -62,45 +63,47 @@ router.get('/dashboard',function(req,res){
     return res.status(401).send();
   }
   return res.status(200).send("welcome !! successfully logged In");
-})
+});
  //register 
 router.post('/register',function(req,res){
   var username=req.body.username;
   User.findOne({username:username},function(err,user){
     if(err){
-      console.log(err);
-      return res.status(400).send();
+        console.log(err);
+        return res.status(400).send();
     }
-    if(user){
-      return res.status(401).send("User already exist");
+    else{
+      if(user){
+        return res.status(401).send("User already exist");
+      }
+    
+      else{
+        var password= req.body.password;
+        var firstname=req.body.firstname;
+        var lastname=req.body.lastname;
+        var newuser =new User();
+        newuser.username=username;
+        newuser.password=password;
+        newuser.firstname=firstname;
+        newuser.lastname=lastname;
+        newuser.save(function(err,saveUser){
+          if(err){
+            console.log(err);
+            return res.status(500).send();
+          }
+          else{
+            return res.status(200).send(saveUser);
+          }
+        });
+      }
     }
-    
-  else{
-  var password= req.body.password;
-  var firstname=req.body.firstname;
-  var lastname=req.body.lastname;
-
-
-  var newuser =new User();
-  newuser.username=username;
-  newuser.password=password;
-  newuser.firstname=firstname;
-  newuser.lastname=lastname;
-  newuser.save(function(err,saveUser){
-  if(err){
-    console.log(err);
-    return res.status(500).send();
-  }
-  
-    return res.status(200).send();
-    
-})
-  }
-})
-  
-  })
+ 
+  });
+});
 
 module.exports = router;
+
+
 
 
     
